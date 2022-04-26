@@ -120,6 +120,8 @@ public class ContactManager {
         if (pulledContacts.isEmpty()) {
             System.out.println("There are no contacts.");
         } else {
+            System.out.format("%1s%2s%8s%2s%8s\n", "|", "       Name", "|", "       Phone", "|");
+            System.out.println("----------------------------------------");
             // formatPulledContacts(); // format those contacts into person objects stored into all contacts for manipulation
             for (Person contact : allContacts) { // print each contact formatted properly
                 System.out.println(formatWriteContact(contact));
@@ -174,12 +176,14 @@ public class ContactManager {
         if (phone.length() == 7) {
             String phone1 = phone.substring(0, 3);
             String phone2 = phone.substring(3, 7);
-            return "Name: " + contact.getName() + " Phone: " + phone1 + "-" + phone2;
+            String formattedPhone = phone1 + "-" + phone2;
+            return String.format("%1s%2s%15s%2s%11s", "| ", contact.getName(), "| ", formattedPhone, "|");
         } else {
             String phone1 = phone.substring(0, 3);
             String phone2 = phone.substring(3, 6);
             String phone3 = phone.substring(6, 10);
-            return "Name: " + contact.getName() + " Phone: " + phone1 + "-" + phone2 + "-" + phone3;
+            String formattedPhone = phone1 + "-" + phone2 + "-" + phone3;
+            return String.format("%1s%2s%15s%2s%7s", "| ", contact.getName(), "| ", formattedPhone, "|");
         }
     }
 
