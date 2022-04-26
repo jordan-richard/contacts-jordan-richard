@@ -1,5 +1,3 @@
-
-
 public class Person {
     //constructor
     public Person(String nameP, String numP) {
