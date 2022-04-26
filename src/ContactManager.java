@@ -1,5 +1,7 @@
 //package warmups.test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +62,9 @@ public class ContactManager {
         }
     }
 
-    public static void optionSelected(int option) {
+
+
+    public static void optionSelected(int option)  throws FileNotFoundException {
         switch (option) {
             case 1:
                 displayAllContacts();
@@ -80,6 +84,7 @@ public class ContactManager {
                 break;
             case 5:
                 System.out.println("Goodbye..... {In my Alexa voice}");
+                showArt();
                 run = false;
                 break;
             default:
@@ -88,6 +93,7 @@ public class ContactManager {
                 break;
         }
     }
+
 
     // ----- grab all existing contacts -----
     public static void grabContacts() {
@@ -117,8 +123,8 @@ public class ContactManager {
             System.out.format("%1s%2s%8s%2s%8s\n", "|", "       Name", "|", "       Phone", "|");
             System.out.println("----------------------------------------");
             // formatPulledContacts(); // format those contacts into person objects stored into all contacts for manipulation
-            for (Person contact : allContacts) { // print each contact formatted properly
-                System.out.println(formatWriteContact(contact));
+            for (String contact : pulledContacts) { // print each contact formatted properly
+                System.out.println(contact);
             }
         }
     }
@@ -153,7 +159,8 @@ public class ContactManager {
             String phone2 = phoneFormat.substring(3, 6);
             String phone3 = phoneFormat.substring(6);
 //        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
-            System.out.printf("Added (Name: %s phone: " + phone1 + "-" + phone2 + "-" + phone3 + ") %n", person.getName());
+            System.out.printf("Added (Name: %s phone: "  + phone1  + phone2 + "-" + phone3 + ") %n",
+                person.getName());
         } else if (person.getPhoneNumber().length() == 7) {
             String phone1 = phoneFormat.substring(0, 3);
             String phone2 = phoneFormat.substring(3);
@@ -170,17 +177,18 @@ public class ContactManager {
             String phone1 = phone.substring(0, 3);
             String phone2 = phone.substring(3, 7);
             String formattedPhone = phone1 + "-" + phone2;
-            return String.format("%1s%2s%15s%2s%11s", "| ", contact.getName(), "| ", formattedPhone, "|");
+            return String.format("| %-16s | %-18s|",contact.getName(),formattedPhone);
         } else {
             String phone1 = phone.substring(0, 3);
             String phone2 = phone.substring(3, 6);
             String phone3 = phone.substring(6, 10);
-            String formattedPhone = phone1 + "-" + phone2 + "-" + phone3;
-            return String.format("%1s%2s%15s%2s%7s", "| ", contact.getName(), "| ", formattedPhone, "|");
+            String formattedPhone = "(" + phone1 + ")"  + phone2 + "-" + phone3;
+//            return String.format("%1s%2s%15s%2s%7s", "| ", contact.getName(), "| ", formattedPhone, "|");
+            return String.format("| %-16s | %-18s|",contact.getName(),formattedPhone);
         }
     }
 
-    public static void searchContacts() {
+    public static void searchContacts() throws FileNotFoundException {
         grabContacts();
         if (pulledContacts.isEmpty()) {
             System.out.println("No contact found.");
@@ -208,7 +216,7 @@ public class ContactManager {
         } else return contact.getPhoneNumber().contains(search);
     }
 
-    public static void deleteContinue() {
+    public static void deleteContinue() throws FileNotFoundException {
         System.out.printf("Would you like to search again... or nahh? (y/n)%n");
         String userResponse = scanner.nextLine();
         if (userResponse.equalsIgnoreCase("y") || userResponse.equalsIgnoreCase("yes")) {
@@ -221,7 +229,7 @@ public class ContactManager {
         }
     }
 
-    public static void deleteSearch() {
+    public static void deleteSearch() throws FileNotFoundException {
         System.out.printf("Would you like to search again... or nahh? (y/n)%n");
         String userResponse = scanner.nextLine();
         if (userResponse.equalsIgnoreCase("y") || userResponse.equalsIgnoreCase("yes")) {
@@ -240,7 +248,7 @@ public class ContactManager {
         return response.equalsIgnoreCase("y") || response.equalsIgnoreCase("yes");
     }
 
-    public static void deleteContact() {
+    public static void deleteContact() throws FileNotFoundException {
         grabContacts(); // checks .txt file status
         if (pulledContacts.isEmpty()) {
             System.out.println("There are no contacts to search/delete.");
@@ -294,7 +302,8 @@ public class ContactManager {
         }
     }
 
-    public static int isolateContact(ArrayList<Integer> indices) { // isolate the exact contact to delete
+    public static int isolateContact(ArrayList<Integer> indices) { // isolate the exact contact to delete, look at
+        // this later
         System.out.printf("Select contact to delete. 1-%d%n", indices.size());
         for (int i = 0; i < indices.size(); i++) {
             System.out.printf("%d: %s%n", i + 1, formatWriteContact(allContacts.get(indices.get(i))));
@@ -333,7 +342,7 @@ public class ContactManager {
         }
     }
 
-    public static void confirm() {
+    public static void confirm() throws FileNotFoundException {
         System.out.println("Would you like to continue..or nahh? (y/n)");
         String userResponse = scanner.next();
         scanner.nextLine(); // clear out scanner for optionChecker scanner that is 'SCANNER.NEXTLINE()'
@@ -347,12 +356,22 @@ public class ContactManager {
         }
     }
 
-    public static void runProgram() {
+    public static void showArt() throws FileNotFoundException {
+        File file = new File("contacts-jordan-richard/art.txt");
+        Scanner reader = new Scanner(file);
+            // hasNextLine... if nextline in txt file - print!
+        while (reader.hasNextLine()) {
+            String line = reader.nextLine();
+            System.out.println(line);
+        }
+    }
+
+    public static void runProgram() throws FileNotFoundException {
         displayMenu();
         optionSelected(optionChecker());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         while (run) {
             checkFiles();
             runProgram();
