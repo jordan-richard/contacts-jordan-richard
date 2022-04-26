@@ -112,9 +112,11 @@ public class ContactManager {
     public static void displayAllContacts() {
         grabContacts(); // grab the current contacts
         if (pulledContacts.isEmpty()) {
-            System.out.println("There are no  contacts.");
+            System.out.println("There are no contacts.");
         } else {
-            formatPulledContacts(); // format those contacts into person objects stored into all contacts for manipulation
+            System.out.format("%1s%2s%8s%2s%8s\n", "|", "       Name", "|", "       Phone", "|");
+            System.out.println("----------------------------------------");
+            // formatPulledContacts(); // format those contacts into person objects stored into all contacts for manipulation
             for (Person contact : allContacts) { // print each contact formatted properly
                 System.out.println(formatWriteContact(contact));
             }
@@ -128,23 +130,54 @@ public class ContactManager {
         String name = scanner.nextLine();
         System.out.println("Enter a phone number");
         String phoneNumber = scanner.next();
+        // return new Person(name, phoneNumber);
+        while((phoneNumber.length() != 7) && (phoneNumber.length() != 10)){
+            System.out.println("Not enough digits. Enter a valid phone number (7 or 10 digits)");
+            phoneNumber = scanner.next();
+        }
         return new Person(name, phoneNumber);
     }
 
     // ----- add to existing contact list -----
     public static void addToContacts() {
         Person person = createContact();
+        String phoneFormat = person.getPhoneNumber();
         allContacts.add(person); // add to allContacts List
         try {
             Files.write(path, Collections.singletonList(formatWriteContact(person)), StandardOpenOption.APPEND); // writes to .txt file
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
+        if(person.getPhoneNumber().length() == 10){
+            String phone1 = phoneFormat.substring(0, 3);
+            String phone2 = phoneFormat.substring(3, 6);
+            String phone3 = phoneFormat.substring(6);
+//        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
+            System.out.printf("Added (Name: %s phone: " + phone1 + "-" + phone2 + "-" + phone3 + ") %n", person.getName());
+        } else if (person.getPhoneNumber().length() == 7) {
+            String phone1 = phoneFormat.substring(0, 3);
+            String phone2 = phoneFormat.substring(3);
+//            String phone3 = phoneFormat.substring(6);
+//        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
+            System.out.printf("Added (Name: %s phone: " + phone1 + "-" + phone2 + ") %n", person.getName());
+        }
+        // System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
     }
 
     public static String formatWriteContact(Person contact) { // formats person object to display properly
-        return String.format("Name: %s Phone: %s", contact.getName(), contact.getPhoneNumber());
+        String phone = contact.getPhoneNumber();
+        if (phone.length() == 7) {
+            String phone1 = phone.substring(0, 3);
+            String phone2 = phone.substring(3, 7);
+            String formattedPhone = phone1 + "-" + phone2;
+            return String.format("%1s%2s%15s%2s%11s", "| ", contact.getName(), "| ", formattedPhone, "|");
+        } else {
+            String phone1 = phone.substring(0, 3);
+            String phone2 = phone.substring(3, 6);
+            String phone3 = phone.substring(6, 10);
+            String formattedPhone = phone1 + "-" + phone2 + "-" + phone3;
+            return String.format("%1s%2s%15s%2s%7s", "| ", contact.getName(), "| ", formattedPhone, "|");
+        }
     }
 
     public static void searchContacts() {
@@ -155,7 +188,7 @@ public class ContactManager {
             contactExists = false;
             System.out.println("Search by name or phone number.");
             String search = scanner.nextLine().trim().toLowerCase();
-            formatPulledContacts(); // formats and adds pulled contacts to allContacts list
+            // formatPulledContacts(); // formats and adds pulled contacts to allContacts list
             for (Person contact : allContacts) { // TODO: make its own method
                 if (search(contact, search)) {
                     System.out.println(formatWriteContact(contact));
@@ -215,7 +248,7 @@ public class ContactManager {
             contactExists = false; // reset static variable
             System.out.println("Search by name or phone number.");
             String search = scanner.nextLine().trim().toLowerCase();
-            formatPulledContacts(); // add pulled contacts into a static manipulable variable
+            // formatPulledContacts(); // add pulled contacts into a static manipulable variable
             ArrayList<Integer> temp = new ArrayList<>(); // method temporary list of search result indices
             for (Person contact : allContacts) {
                 if (search(contact, search)) { // run search method
