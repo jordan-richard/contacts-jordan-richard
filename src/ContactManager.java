@@ -25,7 +25,7 @@ public class ContactManager {
     public static List<String> pulledContacts = new ArrayList<>(); // pulled all contacts from contacts.txt
 
     public static void displayMenu() {
-        System.out.printf("Options Menu [Enter value between 1-5]%n");
+        System.out.printf("Options Menu: [Enter value between 1-5]%n");
         System.out.println("1: View all contacts");
         System.out.println("2: Add new contact");
         System.out.println("3: Search contacts");
@@ -62,30 +62,30 @@ public class ContactManager {
 
     public static void optionSelected(int option) {
         switch (option) {
-            case 1:
+            case 1 -> {
                 displayAllContacts();
                 confirm();
-                break;
-            case 2:
+            }
+            case 2 -> {
                 addToContacts();
                 confirm();
-                break;
-            case 3:
+            }
+            case 3 -> {
                 searchContacts();
                 confirm();
-                break;
-            case 4:
+            }
+            case 4 -> {
                 deleteContact();
                 confirm();
-                break;
-            case 5:
+            }
+            case 5 -> {
                 System.out.println("Goodbye..... {In my Alexa voice}");
                 run = false;
-                break;
-            default:
+            }
+            default -> {
                 System.out.println("I do not like that response.");
                 runProgram();
-                break;
+            }
         }
     }
 
@@ -112,7 +112,7 @@ public class ContactManager {
     public static void displayAllContacts() {
         grabContacts(); // grab the current contacts
         if (pulledContacts.isEmpty()) {
-            System.out.println("There are no  contacts.");
+            System.out.println("There are no contacts.");
         } else {
             formatPulledContacts(); // format those contacts into person objects stored into all contacts for manipulation
             for (Person contact : allContacts) { // print each contact formatted properly
@@ -128,22 +128,63 @@ public class ContactManager {
         String name = scanner.nextLine();
         System.out.println("Enter a phone number");
         String phoneNumber = scanner.next();
+//TODO added digit checker:
+        while((phoneNumber.length() != 7) && (phoneNumber.length() != 10)){
+            System.out.println("Not enough digits. Enter a valid phone number (7 or 10 digits)");
+            phoneNumber = scanner.next();
+        }
         return new Person(name, phoneNumber);
     }
 
     // ----- add to existing contact list -----
     public static void addToContacts() {
         Person person = createContact();
+        String phoneFormat = person.getPhoneNumber();
         allContacts.add(person); // add to allContacts List
         try {
-            Files.write(path, Collections.singletonList(formatWriteContact(person)), StandardOpenOption.APPEND); // writes to .txt file
+            // writes to .txt file, serializable, will always contain only one element
+            // standard open option APPEND: appends some data to the file
+            Files.write(path, Collections.singletonList(formatWriteContact(person)), StandardOpenOption.APPEND);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
+        if(person.getPhoneNumber().length() == 10){
+            String phone1 = phoneFormat.substring(0, 3);
+            String phone2 = phoneFormat.substring(3, 6);
+            String phone3 = phoneFormat.substring(6);
+//        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
+            System.out.printf("Added (Name: %s phone: " + phone1 + "-" + phone2 + "-" + phone3 + ") %n", person.getName());
+        } else if (person.getPhoneNumber().length() == 7) {
+            String phone1 = phoneFormat.substring(0, 3);
+            String phone2 = phoneFormat.substring(3);
+//            String phone3 = phoneFormat.substring(6);
+//        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
+            System.out.printf("Added (Name: %s phone: " + phone1 + "-" + phone2 + ") %n", person.getName());
+        }
+//        TODO: add else later
+
     }
 
     public static String formatWriteContact(Person contact) { // formats person object to display properly
+//        String phone = contact.getPhoneNumber();
+//        if (phone.length() == 7) {
+//            String phone1 = phone.substring(0, 3);
+//            String phone2 = phone.substring(3);
+//            return String.format("Name: %s Phone: %s-%s", contact.getName(), phone1, phone2);
+//            return String.format("Name: %s Phone: %s", contact.getName(), contact.getPhoneNumber());
+//        }
+//        else {
+////            String phone1 = phone.substring(0, 3);
+////            String phone2 = phone.substring(3, 6);
+////            String phone3 = phone.substring(6);
+////            System.out.println(phone1);
+////            System.out.println(phone2);
+////            System.out.println(phone3);
+////            return String.format("Name: %s Phone: %s-%s-%s", contact.getName(), phone1, phone2, phone3);
+////            return String.format("Name: %s Phone: %s", contact.getName(), contact.getPhoneNumber());
+////            return phone1 + "-" + phone2 + "-" + phone3;
+//        }
         return String.format("Name: %s Phone: %s", contact.getName(), contact.getPhoneNumber());
     }
 
@@ -233,7 +274,7 @@ public class ContactManager {
                     try {
                         Files.writeString(path, ""); // clear existing .txt file
                         for (Person contact : allContacts) {
-                            Files.write(path, Arrays.asList(formatWriteContact(contact)), StandardOpenOption.APPEND);
+                            Files.write(path, List.of(formatWriteContact(contact)), StandardOpenOption.APPEND);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
