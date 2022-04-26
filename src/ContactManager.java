@@ -123,8 +123,8 @@ public class ContactManager {
             System.out.format("%1s%2s%8s%2s%8s\n", "|", "       Name", "|", "       Phone", "|");
             System.out.println("----------------------------------------");
             // formatPulledContacts(); // format those contacts into person objects stored into all contacts for manipulation
-            for (Person contact : allContacts) { // print each contact formatted properly
-                System.out.println(formatWriteContact(contact));
+            for (String contact : pulledContacts) { // print each contact formatted properly
+                System.out.println(contact);
             }
         }
     }
@@ -159,7 +159,7 @@ public class ContactManager {
             String phone2 = phoneFormat.substring(3, 6);
             String phone3 = phoneFormat.substring(6);
 //        System.out.printf("Added (Name: %s Phone: %s)%n", person.getName(), person.getPhoneNumber());
-            System.out.printf("Added (Name: %s phone: " + "("+ phone1 + ")" + phone2 + "-" + phone3 + ") %n",
+            System.out.printf("Added (Name: %s phone: "  + phone1  + phone2 + "-" + phone3 + ") %n",
                 person.getName());
         } else if (person.getPhoneNumber().length() == 7) {
             String phone1 = phoneFormat.substring(0, 3);
@@ -177,13 +177,14 @@ public class ContactManager {
             String phone1 = phone.substring(0, 3);
             String phone2 = phone.substring(3, 7);
             String formattedPhone = phone1 + "-" + phone2;
-            return String.format("%1s%2s%15s%2s%11s", "| ", contact.getName(), "| ", formattedPhone, "|");
+            return String.format("| %-16s | %-18s|",contact.getName(),formattedPhone);
         } else {
             String phone1 = phone.substring(0, 3);
             String phone2 = phone.substring(3, 6);
             String phone3 = phone.substring(6, 10);
-            String formattedPhone = phone1 + "-" + phone2 + "-" + phone3;
-            return String.format("%1s%2s%15s%2s%7s", "| ", contact.getName(), "| ", formattedPhone, "|");
+            String formattedPhone = "(" + phone1 + ")"  + phone2 + "-" + phone3;
+//            return String.format("%1s%2s%15s%2s%7s", "| ", contact.getName(), "| ", formattedPhone, "|");
+            return String.format("| %-16s | %-18s|",contact.getName(),formattedPhone);
         }
     }
 
